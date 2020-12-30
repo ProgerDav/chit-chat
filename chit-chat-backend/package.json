@@ -1,0 +1,21 @@
+{
+  "name": "chit-chat-backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js --experimental-modules",
+    "watch": "nodemon --inspect server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Davit Gyulnazaryan <developer.gyulnazaryan@gmail.com>",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "mongoose": "^5.10.11",
+    "pusher": "^4.0.0"
+  }
+}

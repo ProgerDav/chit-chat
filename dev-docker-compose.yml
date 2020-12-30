@@ -1,0 +1,55 @@
+version: "3"
+
+services:
+  ##########################
+  ### SETUP SERVER CONTAINER
+  ##########################
+  server:
+    # Tell docker what file to build the server from
+    build:
+      context: ./chit-chat-backend
+      dockerfile: Dockerfile-dev
+    # The ports to expose
+    expose:
+      - 8000
+    # Environment variables
+    environment:
+      # - MONGO_URI=mongodb://db:27017/db
+      - PORT=8080
+      - JWT_SECRET=secretsecret
+      - JWT_EXPIRY=30d
+      - DEBUG=worker:*
+      - MORGAN=combined
+      - NODE_ENV=development
+    # Port mapping
+    ports:
+      - 8000:8000
+    # Volumes to mount
+    volumes:
+      - ./chit-chat-backend:/app/server/
+    # Run command
+    # Nodemon for hot reloading (-L flag required for polling in Docker)
+    command: nodemon -L chit-chat-backend/server.js
+    # Restart action
+    restart: always
+  ##########################
+  ### SETUP CLIENT CONTAINER
+  ##########################
+  client:
+    build:
+      context: ./chit-chat-frontend
+      dockerfile: Dockerfile-dev
+    environment:
+      - REACT_APP_PORT=3000
+      - CHOKIDAR_USEPOLLING=true
+    expose:
+      - 3000
+    ports:
+      - 3000:3000
+    volumes:
+      - ./chit-chat-frontend/src:/app/client/src
+      - ./chit-chat-frontend/public:/app/client/public
+    links:
+      - server
+    command: yarn start
+    restart: always

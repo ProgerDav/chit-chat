@@ -1,0 +1,78 @@
+.room__participants {
+  width: 400px;
+  height: 100%;
+  padding: 20px 0;
+}
+
+.room__addParticipant {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 10px;
+}
+
+.room__addParticipant button {
+  width: 200px;
+  margin-top: 15px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.drawer {
+  display: flex;
+  flex-direction: column;
+}
+
+.drawer__header {
+  display: flex;
+  align-items: center;
+  padding: 20px;
+  border-left: 1px solid lightgray;
+  background-color: #ededed;
+}
+
+.drawer__headerTitle {
+  font-size: 18px;
+  font-weight: 500;
+  margin-left: 40px;
+}
+
+.drawer__body {
+  flex: 1;
+  background-color: #ededed;
+  overflow: auto;
+}
+
+.drawer__item {
+  background-color: #fff;
+  margin: 10px 0;
+  box-sizing: border-box;
+  padding: 20px;
+}
+
+.drawer__item:first-child {
+  margin-top: 0;
+}
+
+.room__info {
+  display: flex;
+  flex-direction: column;
+}
+
+.room__avatar {
+  width: 100%;
+  display: flex;
+  margin-bottom: 10px;
+}
+
+.room__avatar>.MuiAvatar-root, .room__avatar .MuiAvatar-fallback {
+  width: 100%;
+  height: auto;
+}
+
+.room__createdAt{
+  margin-top: 10px;
+  margin-bottom: 10px;
+  font-weight: 300;
+  color: gray;
+}
