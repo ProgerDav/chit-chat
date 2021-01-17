@@ -17,6 +17,6 @@ export const configs = {
   // also sends auth headers to trigger endpoint
   authEndpoint: "http://localhost:8080/pusher/auth",
   // auth: {
-  //   headers: { Authorization: "Bearer token" },
+  //   headers: { Authorization: `Bearer ${auth.currentUser?.uid}` },
   // },
 };

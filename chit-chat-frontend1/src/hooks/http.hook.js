@@ -6,8 +6,10 @@ export const useHttp = () => {
   const [
     {
       user: { uid },
+      socketId,
     },
   ] = useAuthState();
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -15,6 +17,10 @@ export const useHttp = () => {
     async ({ method = "GET", url, data = null, headers = {} }) => {
       try {
         if (uid) headers.Authorization = `Bearer ${uid}`;
+        if (socketId) {
+          data = data ?? {};
+          data.socketId = socketId;
+        }
 
         setLoading(true);
         setError(null);
@@ -32,7 +38,7 @@ export const useHttp = () => {
         setLoading(false);
       }
     },
-    [uid]
+    [uid, socketId]
   );
 
   const clearError = useCallback(() => setError(null), [setError]);

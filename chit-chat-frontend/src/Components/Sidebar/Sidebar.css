@@ -54,9 +54,9 @@
 .sidebar__buttonContainer{
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
   height: 35px;
-  padding: 10px 0;
+  padding: 20px;
   background-color: white;
 }
 
@@ -68,4 +68,24 @@
   background-color: white;
   flex: 1;
   overflow: auto;
+}
+
+.sidebarChat{
+  display: flex;
+  cursor: pointer;
+  padding: 20px;
+  border-bottom: 1px solid #f6f6f6;
+}
+
+.sidebarChat:hover{
+  background-color: #ebebeb;
+}
+
+.sidebarChat__info{
+  margin-left: 15px;
+}
+
+.sidebarChat__info > h2{
+  font-size: 16px;
+  margin-bottom: 8px;
 }

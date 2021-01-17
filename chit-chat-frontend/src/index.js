@@ -3,29 +3,20 @@ import ReactDOM from "react-dom";
 import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
-import { PusherProvider } from "@harelpls/use-pusher";
-import { configs } from "./pusher";
-import { AuthProvider } from "./State/auth/AuthStateProvider";
-import {
-  reducer,
-  initialState as authInitialState,
-} from "./State/auth/authReducer";
 
-import { RoomsProvider } from "./State/rooms/RoomsStateProvider";
-import {
-  initialState as roomsInitialState,
-  roomsReducer,
-} from "./State/rooms/roomsReducer";
+import { Provider } from "react-redux";
+import { store } from "./store";
+
+import { PusherProvider } from "@harelpls/use-pusher";
+import { configs } from "./services/pusher/pusher";
 
 ReactDOM.render(
   <React.StrictMode>
-    <PusherProvider {...configs}>
-      <AuthProvider initialState={authInitialState} reducer={reducer}>
-        <RoomsProvider initialState={roomsInitialState} reducer={roomsReducer}>
-          <App />
-        </RoomsProvider>
-      </AuthProvider>
-    </PusherProvider>
+    <Provider store={store}>
+      <PusherProvider {...configs}>
+        <App />
+      </PusherProvider>
+    </Provider>
   </React.StrictMode>,
   document.getElementById("root")
 );

@@ -11,8 +11,8 @@ const preferencesSchema = mongoose.Schema({
 export const userSchema = mongoose.Schema({
   uid: String,
   displayName: String,
-  photoUrl: String,
-  token: String,
+  photoURL: String,
+  lastLoginAt: mongoose.Schema.Types.Date,
   preferences: {
     type: preferencesSchema,
     default: {

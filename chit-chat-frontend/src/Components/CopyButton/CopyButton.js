@@ -24,7 +24,7 @@ function CopyButton({
         message={alertMessage}
         onClose={() => setOpen(false)}
       />
-      <Tooltip title="Copy" placement="top-center">
+      <Tooltip title="Copy" placement="top">
         <IconButton onClick={copyText}>
           <FileCopy />
         </IconButton>

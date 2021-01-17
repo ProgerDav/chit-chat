@@ -1,4 +1,5 @@
 import Message from "../models/Message.js";
+import { broadcastMessage } from "../services/pusherService.js";
 
 export const getMessagesForRoom = async (req, res) => {
   try {
@@ -13,14 +14,15 @@ export const getMessagesForRoom = async (req, res) => {
 
 export const createMessage = async (req, res) => {
   try {
-    const { message, room, authenticatedUser } = req.body;
-
+    const { message, room, authenticatedUser, socketId } = req.body;
     const dbMessage = await Message.create({
       message,
       room,
       userId: authenticatedUser.uid,
       name: authenticatedUser.displayName,
     });
+
+    await broadcastMessage(dbMessage, socketId);
 
     res.status(201).json(dbMessage);
   } catch (e) {

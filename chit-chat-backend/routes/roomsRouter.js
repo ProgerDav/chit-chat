@@ -1,44 +1,29 @@
 import { Router } from "express";
 import { auth } from "../middleware/auth.milddleware.js";
-import Room from "../models/Room.js";
 import {
   getAllRooms,
+  createRoom,
   getRoomById,
   removeParticipant,
   toggleJoinByLink,
+  updateRoom,
 } from "../controllers/roomsController.js";
+import { multer } from "../services/multerService.js";
 
 const router = Router();
 
 router.get("/rooms/sync/:uid", auth, getAllRooms);
 
-router.post("/rooms/:id", async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { roomQuery = {} } = req.body;
-    console.log(roomQuery);
-    const room = await Room.findOne({ _id: id, ...roomQuery });
+router.post("/rooms/new", auth, createRoom);
 
-    res.json({ room });
-  } catch (e) {
-    res.status(500).send(e);
-  }
-});
+router.get("/rooms/:id", getRoomById);
 
-router.post("/rooms/new", async (req, res) => {
-  try {
-    const { name, authenticatedUser } = req.body;
-    const room = await Room.create({
-      name,
-      participants,
-      createdAt: new Date().toUTCString(),
-    });
-
-    res.json({ room });
-  } catch (e) {
-    res.status(500).send(e);
-  }
-});
+router.patch(
+  "/rooms/:id/update",
+  auth,
+  multer.fields(["name", { name: "image", maxCount: 1 }]),
+  updateRoom
+);
 
 router.patch("/rooms/:id/toggle-joinByLink", auth, toggleJoinByLink);
 

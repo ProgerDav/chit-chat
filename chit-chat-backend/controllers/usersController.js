@@ -1,29 +1,24 @@
 import User from "../models/User.js";
 import Room from "../models/Room.js";
+import mongoose from "mongoose";
+import { broadcastNewParticipant } from "../services/pusherService.js";
 
 export const login = async (req, res) => {
   try {
-    const { user, invitedRoom } = req.body;
+    const { user, invitedRoomId } = req.body;
     const token = user.stsTokenManager.accessToken;
     let dbUser = await User.findOne({ uid: user.uid });
 
     if (!dbUser) dbUser = await User.create({ ...user, token });
 
-    // if (dbUser.token !== token) {
-    //   dbUser.update({ token });
-    //   console.log("token updated");
-    // }
+    if (mongoose.isValidObjectId(invitedRoomId)) {
+      const room = await Room.findById(invitedRoomId);
+      if (room && !room.participantIds.find(({ uid }) => uid === dbUser.uid)) {
+        room.set("participantIds", [...room.participantIds, dbUser.uid]);
+        room.save();
+      }
+    }
 
-    // if (invitedRoom) {
-    //   const room = await Room.findById(invitedRoom._id);
-    //   console.log(room);
-    //   if (room && !room.participantIds.find(({ uid }) => uid === dbUser.uid)) {
-    //     // room.set("participants", [...room.participants, dbUser]);
-    //     // room.save();
-    //     room.update({ $push: { participantIds: user.uid } });
-    //   }
-    //   console.log(room.participantIds.length);
-    // }
     res.json({ user: dbUser });
   } catch (e) {
     res.status(500).send(e);
@@ -32,29 +27,33 @@ export const login = async (req, res) => {
 
 export const acceptRoomInvitation = async (req, res) => {
   try {
-    const { authenticatedUser, invitedRoom } = req.body;
+    const { authenticatedUser, invitedRoomId, socketId } = req.body;
 
-    if (invitedRoom) {
-      const room = await Room.findOne({
-        _id: invitedRoom._id,
-        joinByLink: true,
-      });
+    if (!mongoose.isValidObjectId(invitedRoomId))
+      res.status(404).json({ message: "Room was not found..." });
+    const room = await Room.findOne({
+      _id: invitedRoomId,
+      joinByLink: true,
+    });
 
-      if (!room) res.json({ message: "Room was not found..." });
+    if (!room) res.status(404).json({ message: "Room was not found..." });
 
-      if (room.participantIds.find((uid) => uid === authenticatedUser.uid))
-        res.json({ message: "You are aleady in this room." });
+    if (room.participantIds.find((uid) => uid === authenticatedUser.uid))
+      res.json({ success: false, message: "You are aleady in this room." });
 
-      room.set("participantIds", [
-        ...room.participantIds,
-        authenticatedUser.uid,
-      ]);
-      room.save();
-      console.log(room.participantIds.length);
-    }
+    await room.set("participantIds", [...room.participantIds, authenticatedUser.uid]);
+    await room.save();
+
+    const roomWithMessages = await Room.findOne({ _id: room._id })
+      .populate(["participants", "lastMessage", "messages"])
+      .populate("lastMessage.user");
+
+    await broadcastNewParticipant(roomWithMessages._id, roomWithMessages.participants, socketId);
+
     res.json({
       message: "You have joined the room successfully!",
       success: true,
+      room: roomWithMessages,
     });
   } catch (e) {
     console.log("Error", e);

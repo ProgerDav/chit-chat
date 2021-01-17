@@ -1,72 +1,53 @@
-import React, { useEffect, useState } from "react";
-import { useAuthState } from "./State/auth/AuthStateProvider";
-import { useRoomsState } from "./State/rooms/RoomsStateProvider";
-import { actions } from "./State/auth/authReducer";
-import { useRoutes } from "./hooks/routes.hook";
-import { auth } from "./firebase";
-import { useHttp } from "./hooks/http.hook";
-import { SET_LAST_MESSAGE } from "./State/rooms/actions";
-import { usePresenceChannel, useEvent } from "@harelpls/use-pusher";
+import { useLayoutEffect, useEffect } from "react";
+import { connect } from "react-redux";
+import { fetchUser, setSocketId } from "./store/auth/auth.actions";
+import { createMuiTheme } from "@material-ui/core/styles";
+import { ThemeProvider } from "@material-ui/styles";
+import { green } from "@material-ui/core/colors";
+import Router from "./Components/Router/Router";
 import "./App.css";
+import { isAuthenticated } from "./store/auth/auth.selectors";
+import SidebarContainer from "./Components/Sidebar/SidebarContainer";
+import { usePusher } from "@harelpls/use-pusher";
 
-function App() {
-  const { request } = useHttp();
-  const [{ user }, dispatch] = useAuthState();
-  const [{ currentRoom }, roomsDispatch] = useRoomsState();
-  const [messages, setMessages] = useState([]);
-  const { channel: messagesChannel } = usePresenceChannel("presence-messages");
-  useEvent(messagesChannel, "inserted", (message) => {
-    console.log("message inserted");
-    if (currentRoom._id === message.room) setMessages([...messages, message]);
-    else
-      roomsDispatch({
-        type: SET_LAST_MESSAGE,
-        payload: { roomId: message.room, message },
-      });
-  });
+const theme = createMuiTheme({
+  palette: {
+    primary: {
+      // Purple and green play nicely together.
+      main: green[800],
+    },
+    secondary: {
+      // This is green.A700 as hex.
+      main: "#11cb5f",
+    },
+  },
+});
 
-  const { channel: roomsChannel } = usePresenceChannel("presence-messages");
-  useEvent(roomsChannel, "change", (room) => {
-    // console.log("message inserted");
-    // if (currentRoom._id === message.room) setMessages([...messages, message]);
-    // else
-    //   roomsDispatch({
-    //     type: SET_LAST_MESSAGE,
-    //     payload: { roomId: message.room, message },
-    //   });
-  });
+function App({ fetchUser, isAuthenticated, setSocketId }) {
+  useLayoutEffect(() => {
+    fetchUser();
+  }, [fetchUser]);
 
+  const { client } = usePusher();
   useEffect(() => {
-    (async function () {
-      try {
-        if (!user.uid || !currentRoom._id) return;
+    client?.connection.bind("connected", () => setSocketId(client.connection.socket_id));
 
-        const response = await request({
-          url: "/messages/sync/" + currentRoom._id,
-        });
-        setMessages(response.data);
-      } catch (e) {}
-    })();
-  }, [setMessages, request, currentRoom, user]);
-
-  useEffect(() => {
-    auth.onAuthStateChanged(async (firbaseUser) => {
-      if (!firbaseUser) return;
-
-      dispatch({
-        type: actions.SET_USER,
-        payload: { user: { ...firbaseUser } },
-      });
-    });
-  }, [dispatch, request]);
-
-  const routes = useRoutes(user.uid !== undefined, messages);
+    // return () => client?.disconnect();
+  }, [client]);
 
   return (
-    <div className="app">
-      <div className="app__body">{routes}</div>
-    </div>
+    <ThemeProvider theme={theme}>
+      <div className="app">
+        <div className="app__body">
+          {isAuthenticated && <SidebarContainer />}
+          <Router isAuthenticated={isAuthenticated} />
+        </div>
+      </div>
+    </ThemeProvider>
   );
 }
 
-export default App;
+export default connect(
+  (state) => ({ isAuthenticated: isAuthenticated(state) }),
+  { fetchUser, setSocketId }
+)(App);

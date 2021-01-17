@@ -1,20 +1,40 @@
 import mongoose from "mongoose";
 
-const roomSchema = mongoose.Schema(
-  {
-    name: String,
-    createdAt: String,
-    joinByLink: { type: mongoose.Schema.Types.Boolean, default: true },
-    participantIds: [{ type: String, ref: "User" }],
+const roomSchema = mongoose.Schema({
+  name: String,
+  createdAt: String,
+  imageURL: String,
+  joinByLink: {
+    type: mongoose.Schema.Types.Boolean,
+    default: true
   },
-  { toJSON: { virtuals: true } }
-);
+  participantIds: [{
+    type: String,
+    ref: "User"
+  }],
+}, {
+  toJSON: {
+    virtuals: true
+  }
+});
 
 roomSchema.virtual("participants", {
   ref: "user",
   localField: "participantIds",
   foreignField: "uid",
   justOne: false, // for many-to-1 relationships
+});
+
+roomSchema.virtual("messages", {
+  ref: "message", // The model to use
+  localField: "_id", // Find people where `localField`
+  foreignField: "room", // is equal to `foreignField`
+  options: {
+    // sort: {
+      // timestamp: -1
+    // },
+    // limit: 100
+  }, // Query options, see http://bit.ly/mongoose-query-options
 });
 
 roomSchema.virtual("lastMessage", {
@@ -24,7 +44,12 @@ roomSchema.virtual("lastMessage", {
   // If `justOne` is true, 'members' will be a single doc as opposed to
   // an array. `justOne` is false by default.
   justOne: true,
-  options: { sort: { timestamp: -1 }, limit: 1 }, // Query options, see http://bit.ly/mongoose-query-options
+  options: {
+    sort: {
+      timestamp: -1
+    },
+    limit: 1
+  }, // Query options, see http://bit.ly/mongoose-query-options
 });
 
 export default mongoose.model("room", roomSchema);

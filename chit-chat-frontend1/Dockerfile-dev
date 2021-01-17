@@ -30,10 +30,10 @@ COPY yarn.lock /app/client/
 COPY package*.json /app/client/
 
 # Installs the client dependencies
-RUN npm install
+RUN yarn install
 
 # Copies the files from the client directory to the container
 COPY . /app/client/
 
 # Runs the client
-CMD ["yarn", "start"]
+CMD ["npm", "start"]
