@@ -3,6 +3,15 @@ import mongoose from "mongoose";
 const messageSchema = mongoose.Schema(
   {
     message: String,
+    type: {
+      type: String,
+      enum: ["message", "attachment", "notification"],
+      default: "message"
+    },
+    attachment: {
+      type: String,
+      default: ""
+    },
     name: String,
     timestamp: { type: Date, default: Date.now },
     room: { type: mongoose.Schema.Types.ObjectId, ref: "room" },

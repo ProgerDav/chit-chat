@@ -30,10 +30,12 @@ function App({ fetchUser, isAuthenticated, setSocketId }) {
 
   const { client } = usePusher();
   useEffect(() => {
-    client?.connection.bind("connected", () => setSocketId(client.connection.socket_id));
+    client?.connection.bind("connected", () =>
+      setSocketId(client.connection.socket_id)
+    );
 
     // return () => client?.disconnect();
-  }, [client]);
+  }, [client, setSocketId]);
 
   return (
     <ThemeProvider theme={theme}>

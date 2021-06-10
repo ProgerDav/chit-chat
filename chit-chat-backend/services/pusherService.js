@@ -1,6 +1,12 @@
 import Pusher from "pusher";
 
 const pusher = new Pusher({
+  // appId: process.env.PUSHER_APP_ID,
+  // key: process.env.PUSHER_APP_KEY,
+  // secret: process.env.PUSHER_APP_SECRET,
+  // cluster: process.env.PUSHER_APP_CLUSTER,
+  // useTLS: process.env.PUSHER_APP_USETLS,
+
   appId: "1098009",
   key: "3da211a4d0f31ef61f87",
   secret: "bf82f9dde61b6afa2212",
@@ -10,7 +16,6 @@ const pusher = new Pusher({
 
 export const authenticateChannel = (req, res) => {
   const { channel_name, socket_id: socketId, authenticatedUser } = req.body;
-  console.log(req.body);
   const presenceData = {
     user_id: authenticatedUser.uid,
     user_info: {

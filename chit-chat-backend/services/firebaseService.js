@@ -34,7 +34,7 @@ export const uploadToFireBase = async (file, fileBaseName) => {
       // The public URL can be used to directly access the file via HTTP.
       //   const url = `https://storage.googleapis.com/${bucket.name}/${fileUpload.name}`;
     //   const url = fileUpload.getSignedUrl({ action: "read", expires:  });
-      resolve(url);
+      resolve(fileUpload.name);
     });
 
     blobStream.end(file.buffer);

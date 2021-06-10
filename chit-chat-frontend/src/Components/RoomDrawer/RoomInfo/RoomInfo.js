@@ -1,19 +1,34 @@
 import { Avatar, TextField, Button, CircularProgress } from "@material-ui/core";
-import { useState } from "react";
-import { storageBaseUrl } from "../../../services/firebase";
+import { useCallback, useEffect, useState } from "react";
+import { firebaseStorage } from "../../../services/firebase";
 
 export const RoomInfo = ({ currentRoom, updateRoomInfo, loading }) => {
   const [name, setName] = useState(currentRoom.name);
   const [image, setImage] = useState(null);
+  const [roomImageUrl, setRoomImageUrl] = useState(null);
   const isModified = currentRoom.name !== name || image;
-  console.log(currentRoom?.imageURL);
 
+  const getRoomImageUrl = useCallback(async () => {
+    const url = await firebaseStorage
+      .child(currentRoom?.imageURL.split("/").pop())
+      .getDownloadURL();
+
+    setRoomImageUrl(url);
+  }, [setRoomImageUrl, currentRoom?.imageURL]);
+
+  useEffect(() => {
+    getRoomImageUrl();
+  }, [getRoomImageUrl]);
   const handleSubmit = () => updateRoomInfo(currentRoom._id, name, image);
 
   return (
     <div className="drawer__item room__info">
       <div className="room__avatar">
-        <Avatar src={storageBaseUrl + currentRoom?.imageURL} />
+        <Avatar
+          variant="rounded"
+          style={{ width: "100%", height: "auto" }}
+          src={roomImageUrl}
+        />
       </div>
       <div>
         <TextField

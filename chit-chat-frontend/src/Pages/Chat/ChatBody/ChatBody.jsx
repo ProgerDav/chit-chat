@@ -1,22 +1,9 @@
 import { Fab } from "@material-ui/core";
 import { ArrowDownward } from "@material-ui/icons";
-import moment from "moment";
 import { useEffect, useRef, useState } from "react";
 import { isScrolledToBottom, scrollToBottom } from "../../../services/scroll";
 
-const Message = ({ message, currentUser }) => (
-  <p
-    className={`chat__message ${
-      message.userId === currentUser.uid && "chat__sentByMe"
-    }`}
-  >
-    <span className="chat__name">{message.name}</span>
-    {message.message}
-    <span className="chat__timestamp">
-      {moment(message.timestamp).format("MMM Do YYYY")}
-    </span>
-  </p>
-);
+import Message from "./Message/Message";
 
 function ChatBody({ messages, currentUser, currentRoom }) {
   const chatBottomAnchor = useRef(null),

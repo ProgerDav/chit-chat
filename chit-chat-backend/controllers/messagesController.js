@@ -15,6 +15,9 @@ export const getMessagesForRoom = async (req, res) => {
 export const createMessage = async (req, res) => {
   try {
     const { message, room, authenticatedUser, socketId } = req.body;
+
+    console.log("AUTH-----", authenticatedUser);
+
     const dbMessage = await Message.create({
       message,
       room,
@@ -22,6 +25,7 @@ export const createMessage = async (req, res) => {
       name: authenticatedUser.displayName,
     });
 
+    console.log('DBMessage', dbMessage);
     await broadcastMessage(dbMessage, socketId);
 
     res.status(201).json(dbMessage);

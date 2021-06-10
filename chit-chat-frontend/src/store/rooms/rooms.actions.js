@@ -68,24 +68,22 @@ export const createRoom = (name, userId) => async (dispatch) => {
   }
 };
 
-export const sendMessage = (message, room, userId) => async (
-  dispatch,
-  getState
-) => {
-  try {
-    dispatch(setLoading(true));
+export const sendMessage =
+  (message, room, userId) => async (dispatch, getState) => {
+    try {
+      dispatch(setLoading(true));
 
-    const response = await axios.post(
-      `/messages/new`,
-      { message, room, socketId: getState().auth.socketId },
-      { headers: { Authorization: `Bearer ${userId}` } }
-    );
+      const response = await axios.post(
+        `/messages/new`,
+        { message, room, socketId: getState().auth.socketId },
+        { headers: { Authorization: `Bearer ${userId}` } }
+      );
 
-    dispatch(addMessage(response.data));
-  } catch (e) {
-    throw e;
-  }
-};
+      dispatch(addMessage(response.data));
+    } catch (e) {
+      throw e;
+    }
+  };
 
 export const toggleJoinByLink = (roomId, userId) => async (dispatch) => {
   try {
@@ -112,55 +110,51 @@ export const toggleJoinByLink = (roomId, userId) => async (dispatch) => {
   }
 };
 
-export const acceptRoomInvitation = (roomId, userId, callback) => async (
-  dispatch,
-  getState
-) => {
-  try {
-    dispatch(setLoading(true));
+export const acceptRoomInvitation =
+  (roomId, userId, callback) => async (dispatch, getState) => {
+    try {
+      dispatch(setLoading(true));
 
-    const response = await axios.put(
-      `/users/accept-invitation`,
-      { invitedRoomId: roomId, socketId: getState().auth.socketId },
-      {
-        headers: {
-          Authorization: `Bearer ${userId}`,
-        },
+      const response = await axios.put(
+        `/users/accept-invitation`,
+        { invitedRoomId: roomId, socketId: getState().auth.socketId },
+        {
+          headers: {
+            Authorization: `Bearer ${userId}`,
+          },
+        }
+      );
+
+      if (!response.data.success && callback) {
+        dispatch(setLoading(false));
+        return callback(response.data.message, response.data.success);
       }
-    );
 
-    if (!response.data.success && callback) {
-      dispatch(setLoading(false));
-      return callback(response.data.message, response.data.success);
+      dispatch(addRoom(response.data.room));
+      callback(response.data.message, response.data.success);
+    } catch (e) {
+      throw e;
     }
+  };
 
-    dispatch(addRoom(response.data.room));
-    callback(response.data.message, response.data.success);
-  } catch (e) {
-    throw e;
-  }
-};
+export const updateRoomInfo =
+  (roomId, name, image) => async (dispatch, getState) => {
+    try {
+      dispatch(setLoading(true));
+      const formData = new FormData();
+      formData.append("name", name);
+      formData.append("image", image);
 
-export const updateRoomInfo = (roomId, name, image) => async (
-  dispatch,
-  getState
-) => {
-  try {
-    dispatch(setLoading(true));
-    const formData = new FormData();
-    formData.append("name", name);
-    formData.append("image", image);
+      const response = await axios.patch(`/rooms/${roomId}/update`, formData, {
+        headers: {
+          Authorization: `Bearer ${getState().auth.currentUser.uid}`,
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
-    const response = await axios.patch(`/rooms/${roomId}/update`, formData, {
-      headers: {
-        Authorization: `Bearer ${getState().auth.currentUser.uid}`,
-        "Content-Type": "multipart/form-data",
-      },
-    });
-
-    // dispatch(setLoading(false));
-    dispatch(updateRoom(roomId, response.data));
-  } catch (e) {
-    throw e;
-  }
-};
+      // dispatch(setLoading(false));
+      dispatch(updateRoom(roomId, response.data));
+    } catch (e) {
+      throw e;
+    }
+  };

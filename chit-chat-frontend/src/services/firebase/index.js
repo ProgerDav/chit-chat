@@ -15,6 +15,9 @@ const auth = app.auth();
 auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
 const googleAuthProvider = new firebase.auth.GoogleAuthProvider();
 
-const storageBaseUrl = "gs://chit-chat-9f623.appspot.com/room-images/";
+const storageBaseUrl = "gs://chit-chat-9f623.appspot.com/";
 
-export { auth, googleAuthProvider, storageBaseUrl };
+// const firebaseStorage = firebase.storage().ref();
+const firebaseStorage = app.storage(storageBaseUrl).ref("/room-images/");
+
+export { auth, googleAuthProvider, storageBaseUrl, firebaseStorage };

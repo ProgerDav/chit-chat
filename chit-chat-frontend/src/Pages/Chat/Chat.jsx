@@ -1,18 +1,28 @@
-import { Avatar, Fab, IconButton, LinearProgress } from "@material-ui/core";
+import {
+  Avatar,
+  IconButton,
+  LinearProgress,
+  Dialog,
+  DialogActions,
+  Button,
+} from "@material-ui/core";
 import {
   SearchOutlined,
   AttachFile,
   MoreVert,
   InsertEmoticon,
   Mic,
-  ArrowDownward,
 } from "@material-ui/icons";
-import moment from "moment";
+
+import Picker from "emoji-picker-react";
 
 import "./Chat.css";
 import ChatBody from "./ChatBody/ChatBody";
 
 function Chat({
+  emojiModalOpen,
+  setEmojiModalOpen,
+  handleEmojiClick,
   setDrawerOpen,
   currentRoom,
   loading,
@@ -47,10 +57,27 @@ function Chat({
       </div>
       {loading && <LinearProgress />}
 
-      <ChatBody messages={messages} currentUser={currentUser} currentRoom={currentRoom} />
+      <ChatBody
+        messages={messages}
+        currentUser={currentUser}
+        currentRoom={currentRoom}
+      />
 
       <div className="chat__footer">
-        <InsertEmoticon />
+        <Dialog open={emojiModalOpen} onClose={() => setEmojiModalOpen(false)}>
+          <Picker onEmojiClick={handleEmojiClick} />
+          <DialogActions>
+            <Button
+              onClick={() => setEmojiModalOpen(false)}
+              color="primary"
+            >
+              Close
+            </Button>
+          </DialogActions>
+        </Dialog>
+        <IconButton onClick={() => setEmojiModalOpen(true)}>
+          <InsertEmoticon />
+        </IconButton>
         <form onSubmit={sendMessage}>
           <input
             value={message}

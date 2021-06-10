@@ -25,6 +25,11 @@ export const ChatContainer = ({
 }) => {
   const [message, setMessage] = useState("");
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [emojiModalOpen, setEmojiModalOpen] = useState(false);
+
+  const handleEmojiClick = (e, emoji) => {
+    setMessage(message + " " + emoji.emoji);
+  };
 
   const invitationToken = location?.state?.invitationToken;
 
@@ -51,7 +56,7 @@ export const ChatContainer = ({
     updateOnlineUserIdsState()
   );
 
-  useEvent(messagesChannel, "inserted", (message) => {
+  useEvent(messagesChannel, "inserted", ({ message }) => {
     message.userId !== currentUser.uid && addMessage(message);
   });
 
@@ -72,6 +77,9 @@ export const ChatContainer = ({
         />
       )}
       <Chat
+        emojiModalOpen={emojiModalOpen}
+        setEmojiModalOpen={setEmojiModalOpen}
+        handleEmojiClick={handleEmojiClick}
         setDrawerOpen={setDrawerOpen}
         currentUser={currentUser}
         currentRoom={currentRoom}

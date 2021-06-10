@@ -44,6 +44,7 @@
 }
 
 .drawer__item {
+  width: 400px;
   background-color: #fff;
   margin: 10px 0;
   box-sizing: border-box;

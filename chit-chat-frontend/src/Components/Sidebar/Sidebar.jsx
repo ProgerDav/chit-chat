@@ -20,7 +20,7 @@ const SidebarChats = ({ loading, rooms, setCurrentRoom }) => {
       <center>
         <CircularProgress />
       </center>
-    );https://compactlinker.herokuapp.com/t/qIetU6QlM
+    );
 
   return rooms.map((room, i) => (
     <div

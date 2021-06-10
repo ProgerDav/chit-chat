@@ -6,7 +6,6 @@ import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import {
   acceptRoomInvitation,
-  createRoom,
 } from "../../store/rooms/rooms.actions";
 import { useEffect, useState } from "react";
 import { connect } from "react-redux";

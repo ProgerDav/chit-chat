@@ -3,6 +3,9 @@ import mongoose from "mongoose";
 import cors from "cors";
 import bodyParser from "body-parser";
 
+import dotenv from 'dotenv';
+dotenv.config();
+
 import MessagesRouter from "./routes/messagesRouter.js";
 import RoomsRouter from "./routes/roomsRouter.js";
 import UsersRouter from "./routes/usersRouter.js";
@@ -20,15 +23,14 @@ app.use(bodyParser.json());
 
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: process.env.CORS_ORIGIN,
     allowedHeaders: "*",
   })
 );
 
 const PORT = process.env.PORT || 8080;
 
-const connectionUrl =
-  "mongodb+srv://chit_chat_user:qvOyXmBASFuxQKWi@cluster0.zyyou.mongodb.net/chitchatdb?retryWrites=true&w=majority";
+const connectionUrl = process.env.DB_URL;
 
 mongoose.connect(connectionUrl, {
   useCreateIndex: true,

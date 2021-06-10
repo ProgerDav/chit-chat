@@ -14,12 +14,12 @@ const initialState = {
   error: null,
 };
 
-const defaultRoom = {
-  _id: "",
-  name: "title",
-  messages: [],
-  participants: [],
-};
+// const defaultRoom = {
+//   _id: "",
+//   name: "title",
+//   messages: [],
+//   participants: [],
+// };
 
 function roomsReducer(state = initialState, action) {
   switch (action.type) {
